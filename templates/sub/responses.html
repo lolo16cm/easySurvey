@@ -1,0 +1,93 @@
+{% extends '../layout.html' %}
+{% load static %}
+{% block title %}{{form.title}}'s response ~ Google Forms CLONE{% endblock %}
+{% block script %}
+<script src="{% static 'index/responses.js' %}" defer></script>
+<script src="{% static 'lib/cookie.min.js' %}"></script>
+{% endblock %}
+{% block body %}
+<div class="container-fluid">
+    <!-- <div class="form-topnav">
+        <a href="/">
+            <img src="{% static 'Icon/icon.png' %}" alt="Google Forms Icon(CLONE)" class="navbar-icon form-icon" title="Forms" />
+        </a>
+        <span class="nav-text nav-form-title input-form-title">{{form.title}}</span>
+        <div class="float-right">
+            <img src="{% static 'Icon/theme.png' %}" alt="Theme icon" id="customize-theme-btn" title="Customize theme" class="nav-form-menu-icon" />
+            <a href="{% url 'view_form' form.code %}">
+                <img src="{% static 'Icon/eye.png' %}" alt="Preview icon" title="Preview" class="nav-form-menu-icon big-screen" />
+            </a>
+            <img src="{% static 'Icon/send.png' %}" alt="Send icon" title="Send" class="nav-form-menu-icon small-screen" id="send-form-btn" />
+            <img src="{% static 'Icon/setting.png' %}" alt="Setting icon" title="Setting" class="nav-form-menu-icon open-setting" />
+            <button class="btn send-form-btn big-screen" title="Send" id="send-form-btn">Send</button>
+        </div>
+    </div> -->
+    <div class="form-topnav">
+        <div class="form-navigation center">
+            <span class="col-4 navigation"><a href="{% url 'edit_form' form.code %}" class="link">Questions</a></span>
+            <span class="col-5 navigation active">Responses</span>
+            <span class="col-14 navigation"><a href="{% url 'view_form' form.code %}" class="link" />Preview</span>
+        </div>
+    </div>
+    <div class="container">
+        <span id="bg-color" style="display: none;">{{form.background_color}}</span>
+        <span id="text-color" style="display: none;">{{form.text_color}}</span>
+        <div class="margin-top-bottom box question-box" id="responses">
+            {% if responses.count > 0 %}
+            <h1 class="response-title">Individual Response:</h1>
+            <ul>
+                {% for i in responses %}
+                    {% if form.collect_email %}
+                        <li><a href="{% url 'response' form.code i.response_code %}" class="link">{{i.responder_email}}'s response</a></li>
+                    {% elif form.authenticated_responder %}
+                        <li><a href="{% url 'response' form.code i.response_code %}" class="link">{{i.responder.username}}'s response</a></li>
+                    {% else %}
+                        <li><a href="{% url 'response' form.code i.response_code %}" class="link">{{i.responder_ip}}'s response</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <button class="btn btn-danger" id="delete-responses">Delete all responses</button>
+            <a href="{% url 'export_csv' form.code %}"><button class="btn btn-success">Download</button></a>
+            {% else %}
+            <h1 class="response-title">0 responses</h1>
+            {% endif %}
+        </div>
+        <div class="margin-top-bottom box question-box">
+            <h1 class="response-title">Questions Summary:</h1>
+            {% for r in responsesSummary %}
+            <div class="response-summary">
+                <h3 class="response-summary-title">{{r.question.question}}</h3>
+                {% if r.answers|length > 0 %}
+                    {% if r.question.question_type == 'short' or r.question.question_type == 'paragraph' %}
+                        {% for i in r.answers %}
+                            <blockquote>{{i.answer}}</blockquote>
+                        {% endfor %}
+                    {% else %}
+                        <canvas id="myChart{{r.question.id}}" class="pie-chart"></canvas>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+                        <script>
+                            Chart.defaults.global.defaultFontFamily = "Roboto";
+                            Chart.defaults.global.defaultFontSize = 30;
+                            var ctx = document.getElementById("myChart{{r.question.id}}");
+                            new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: [],
+                                    datasets: [{
+                                        data: [],
+                                        backgroundColor: []
+                                    }]
+                                },
+                                options: { responsive: true }
+                            });
+                        </script>
+                    {% endif %}
+                {% else %}
+                <blockquote><i>No responses</i></blockquote>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

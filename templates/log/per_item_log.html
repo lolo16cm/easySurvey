@@ -1,0 +1,44 @@
+{% extends '../layout.html' %}
+{% block content %}
+    <div class="content-section">
+        <div><h2>{{ item.item_name }} Audit Logs</h2></div>
+        
+        {% if log %}
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Item Id</th>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Version</th>
+                    <th scope="col">Stock Quantity</th>
+                    <th scope="col">Unit Cost</th>
+                    <th scope="col">Last Modified Date</th>
+                    <th scope="col">Last Modified By</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                {% for entry in log %}
+                <tr style="cursor: pointer;" onclick="window.location= `{% url 'per_item' item.id %}`;">
+                
+                    <td scope="row">{{ forloop.counter }}</td>
+                    <td>{{ entry.item.id }}</td>
+                    <td>{{ entry.modified_item_name }}</td>
+                    <td>{{ entry.version }}</td>
+                    <td>{{ entry.modified_stock_qty }}</td>
+                    <td>{{ entry.modified_price }}</td>
+                    <td>{{ entry.modified_date }}</td>
+                    <td>{{ entry.modified_by.first_name }} ID-{{ entry.modified_by.id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+        <a class="btn btn-outline-success btn-sm" href="javascript:history.back()">Back</a>
+        {% else %}
+            <p>No modification history available.</p>
+            <a class="btn btn-outline-success btn-sm" href="javascript:history.back()">Back</a>
+        {% endif %}
+    </div>
+{% endblock %}
