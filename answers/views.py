@@ -4,12 +4,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from create_form.models import Form, Questions
 
-# Create your views here.
+
 def answer_key(request, code):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     formInfo = Form.objects.filter(code = code)
-    #Checking if form exists
+    
     if formInfo.count() == 0:
         return HttpResponseRedirect(reverse('404'))
     else: formInfo = formInfo[0]

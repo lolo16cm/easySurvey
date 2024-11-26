@@ -18,7 +18,9 @@ class Form(models.Model):
     description = models.CharField(max_length=10000, blank = True)
     creator = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "creator")
     collect_email = models.BooleanField(default=False)
+    # check if the taker is retaker
     authenticated_responder = models.BooleanField(default = False)
+    is_republish = models.BooleanField(default=False)
     edit_after_submit = models.BooleanField(default=False)
     confirmation_message = models.CharField(max_length = 10000, default = "Your response has been recorded.")
     createdAt = models.DateTimeField(auto_now_add = True)
